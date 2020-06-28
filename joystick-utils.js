@@ -23,6 +23,10 @@ module.exports = class joystickUtils {
 		this.controller = require('./controllers/' + this.config.controller);
 
 		let jsu = this;
+
+		if (jsu.config.mock)
+			return;
+
 		// Check if /dev/input/js' + id is availables
 		if (fs.existsSync('/dev/input/js' + this.config.jsid)) {
 			this.joystick = new (require('joystick'))(this.config.jsid, 3500, 350);
@@ -67,8 +71,11 @@ module.exports = class joystickUtils {
 	 * @return {Void}
 	 */
 	cease() {
-		clearInterval(this.framehandler);
-		// console.log("teardown, clearInterval called");
+		let jsu = this;
+		try{
+			clearInterval(jsu.framehandler);
+			jsu.joystick.close();
+		} catch (err) {}
 	}
 
 
@@ -110,8 +117,7 @@ module.exports = class joystickUtils {
 				stack.push(symbol);
 		}
 
-		stack = _.uniq(stack);
-		stack.sort();
+		stack = _.uniq(stack).sort();
 
 		var translated;
 		if (translated = stack.join(" + ")) 
@@ -143,8 +149,7 @@ module.exports = class joystickUtils {
 			
 			if (found) {
 				commandparts = _.uniq(_.without(commandparts, ...UNIQAXIS));
-				commandparts.sort();
-				command = commandparts.join(' + ');
+				command = commandparts.sort().join(' + ');
 			}
 			
 			return command;
@@ -152,7 +157,7 @@ module.exports = class joystickUtils {
 			for (let diag in AXISDIAGONALS)
 				command = command.replace(diag, AXISDIAGONALS[diag].join(" + "));
 
-			return _.uniq(command.split(' + ')).join(' + ');
+			return _.uniq(command.split(' + ')).sort().join(' + ');
 		}
 	}
 

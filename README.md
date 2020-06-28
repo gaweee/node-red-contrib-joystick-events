@@ -30,7 +30,6 @@ node-red-reload
 That's it
 
 ## TODO
-- Improve teardown process with `cease` to stop listening for events and exit clean  
 - Finish up match `memorymatch` test cases 
 
 

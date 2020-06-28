@@ -1,21 +1,16 @@
 const assert = require('assert').strict;
 const _ = require('lodash');
+const log = require('why-is-node-running');
 
-var joystickUtils = require('../joystick-utils');
 
-var js = new joystickUtils({
-	// inputcb: function(data) {
-	// 	console.log(data);
-	// },
-	// 
-	// framecb: function(command) {
-	// 	console.log(command);
-
-	// 	if (js.memorymatch(['→', '↓', '↘', '→ + ○']))
-	// 		console.log("MATCHED");
-	// }
+describe("Axis symbols test", function() {
+	it("Should return nothing if nothing is provided", function() {
+		assert.strictEqual(1,1);
+	});
 });
 
+var joystickUtils = require('../joystick-utils');
+var js = new joystickUtils({ mock: true });
 
 describe("Axis symbols test", function() {
 	it("Should return nothing if nothing is provided", function() {
@@ -34,7 +29,6 @@ describe("Axis symbols test", function() {
 		assert.strictEqual(js.getSymbol('AXIS1', -10), "↑");
 		assert.strictEqual(js.getSymbol('AXIS4', -10), "↑");
     });
-
 });
 
 describe("Translation test", function() {
@@ -120,7 +114,10 @@ describe("Diagonals swap test", function() {
 		assert.strictEqual(js.diagonalsSwap(""), "");
 		assert.strictEqual(js.diagonalsSwap("", false), "");
     });
+
+    // Shutdown
+	after(function(done) {
+		js.cease();
+		done();
+	});
 });
-
-
-js.cease();

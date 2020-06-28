@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Package to inject Joystick Events to Node-Red based off the package from node-joystick (https://github.com/JayBeavers/node-joystick/blob/master/joystick.js)",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --exit --exclude **/*live.js"
   },
   "node-red": {
     "nodes": {
@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "mocha": "^8.0.1",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "why-is-node-running": "^2.2.0"
   }
 }
