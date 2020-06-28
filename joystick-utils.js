@@ -125,9 +125,9 @@ module.exports = class joystickUtils {
 	 * swaps some up-down-left-right combination for diagonals
 	 * Multiple diagonals may appear if various keys are all pressed in tandem.
 	 * E.g. If ['↑', '↓', '→', '□'] all exists, then the resulting map would be ['↗', '↘', '□']
-	 * @param  {Array}  stack the comamnd stack
+	 * @param  {String}  stack the comamnd string
 	 * @param  {Boolean} simplify to simplify, false for expansion
-	 * @return {Array} the simplified stack
+	 * @return {String} the simplified string
 	 */
 	diagonalsSwap(command, simplify=true) {
 		var found = false;
@@ -164,6 +164,8 @@ module.exports = class joystickUtils {
 	 */
 	memorymatch(commands, clear=true) {
 		var nextpos = 0;
+		
+		commands = _.map(commands, s => s.trim());
 		for (let command of commands) {
 			let found = false;
 			let searchparts = this.diagonalsSwap(command, false).split(' + ');
