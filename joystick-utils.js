@@ -136,6 +136,9 @@ module.exports = class joystickUtils {
 	 * @return {String} the simplified string
 	 */
 	diagonalsSwap(command, simplify=true) {
+		if (_.isEmpty(command))
+			return command;
+
 		var found = false;
 		if (simplify) {
 			let commandparts = command.split(' + ');
@@ -147,12 +150,10 @@ module.exports = class joystickUtils {
 				}
 			}
 			
-			if (found) {
+			if (found)
 				commandparts = _.uniq(_.without(commandparts, ...UNIQAXIS));
-				command = commandparts.sort().join(' + ');
-			}
 			
-			return command;
+			return commandparts.sort().join(' + ');;
 		} else {
 			for (let diag in AXISDIAGONALS)
 				command = command.replace(diag, AXISDIAGONALS[diag].join(" + "));
@@ -161,15 +162,17 @@ module.exports = class joystickUtils {
 		}
 	}
 
-
 	/**
 	 * Utility feature to check if a particular sequence is matched
 	 * Once a feature is matched, the memory will be cleared for other matches to occur
-	 * @return {Boolean}
+	 * @param {Array} commands a string array of sequentially matched commands (accepts diagonals) 
+	 * @param {Boolean} clear 
 	 */
 	memorymatch(commands, clear=true) {
-		var nextpos = 0;
+		if (_.isEmpty(commands))
+			return false;
 		
+		var nextpos = 0;
 		commands = _.map(commands, s => s.trim());
 		for (let command of commands) {
 			let found = false;

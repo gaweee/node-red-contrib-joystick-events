@@ -10,7 +10,7 @@ describe("Axis symbols test", function() {
 });
 
 var joystickUtils = require('../joystick-utils');
-var js = new joystickUtils({ mock: true });
+var js = new joystickUtils({ mock: true, memorysize: 10 });
 
 describe("Axis symbols test", function() {
 	it("Should return nothing if nothing is provided", function() {
@@ -113,7 +113,91 @@ describe("Diagonals swap test", function() {
 	it("Should return nothing if nothing is provided", function() {
 		assert.strictEqual(js.diagonalsSwap(""), "");
 		assert.strictEqual(js.diagonalsSwap("", false), "");
-    });
+	});
+
+	it("Should should not translate single direction", function() {
+		assert.strictEqual(js.diagonalsSwap("△ + ↑"), ['△', '↑'].sort().join(' + '));
+		assert.strictEqual(js.diagonalsSwap("□ + →"), ['□', '→'].sort().join(' + '));
+		assert.strictEqual(js.diagonalsSwap("○ + ↓"), ['○', '↓'].sort().join(' + '));
+		assert.strictEqual(js.diagonalsSwap("x + ←"), ['x', '←'].sort().join(' + '));
+	});
+	
+	it("Should translate single diagonals", function() {
+		assert.strictEqual(js.diagonalsSwap("△ + ↑ + →"), ['△', '↗'].sort().join(' + '));
+		assert.strictEqual(js.diagonalsSwap("△ + ↓ + →"), ['△', '↘'].sort().join(' + '));
+		assert.strictEqual(js.diagonalsSwap("□ + ↑ + ←"), ['□', '↖'].sort().join(' + '));
+		assert.strictEqual(js.diagonalsSwap("□ + ↓ + ←"), ['□', '↙'].sort().join(' + '));
+	});
+	
+	it("Should translate multiple diagonals", function() {
+		assert.strictEqual(js.diagonalsSwap("○ + ↓ + ↑ + →"), ['○', '↘', '↗'].sort().join(' + '));
+		assert.strictEqual(js.diagonalsSwap("○ + ↓ + ↑ + ←"), ['○', '↖', '↙'].sort().join(' + '));
+		assert.strictEqual(js.diagonalsSwap("x + ↓ + → + ←"), ['x', '↙', '↘'].sort().join(' + '));
+		assert.strictEqual(js.diagonalsSwap("x + ↑ + → + ←"), ['x', '↖', '↗'].sort().join(' + '));
+	});
+	
+	it("Should reverse diagonals to basic directions", function() {
+		assert.strictEqual(js.diagonalsSwap("△ + ↗", false), ['△', '↑', '→'].sort().join(' + '));
+		assert.strictEqual(js.diagonalsSwap("△ + ↘", false), ['△', '↓', '→'].sort().join(' + '));
+		assert.strictEqual(js.diagonalsSwap("□ + ↖", false), ['□', '↑', '←'].sort().join(' + '));
+		assert.strictEqual(js.diagonalsSwap("□ + ↙", false), ['□', '↓', '←'].sort().join(' + '));
+	});
+	
+	it("Should reverse multiple diagonals to basic directions", function() {
+		assert.strictEqual(js.diagonalsSwap("○ + ↖ + ↗", false), ['○', '↑', '←', '→'].sort().join(' + '));
+		assert.strictEqual(js.diagonalsSwap("○ + ↙ + ↘", false), ['○', '↓', '←', '→'].sort().join(' + '));
+		assert.strictEqual(js.diagonalsSwap("x + ↖ + ↙", false), ['x', '↑', '↓', '←'].sort().join(' + '));
+		assert.strictEqual(js.diagonalsSwap("x + ↗ + ↘", false), ['x', '↑', '↓', '→'].sort().join(' + '));
+		assert.strictEqual(js.diagonalsSwap("△ + ↗ + ↙", false), ['△', '↑', '↓', '←', '→'].sort().join(' + '));
+	});
+});
+
+describe("Memory match test", function() {
+	beforeEach(function(done) {
+		js.memory = ['→','↘','→','→ + □','L1 + → + □','↙','↙ + R2', '△', 'L1 + ○'];
+		done();
+	});
+
+	it("Should not match if memory is empty or pattern is empty", function() {
+		assert.equal(js.memorymatch([], false), false);
+		assert.equal(js.memorymatch([''], false), false);
+	});
+	
+	it("Should match single commands", function() {
+		assert(js.memorymatch(['→'], false));
+		assert(js.memorymatch(['↘'], false));
+		assert(js.memorymatch(['→ + □'], false));
+		assert(js.memorymatch(['R2'], false));
+		assert(js.memorymatch(['L1 + ○'], false));
+	});
+
+	it("Should match partial commands", function() {
+		assert(js.memorymatch(['□'], false));
+		assert(js.memorymatch(['R2'], false));
+		assert(js.memorymatch(['←'], false));
+	});
+
+	it("Should match diagonals commands", function() {
+		assert(js.memorymatch(['← + R2'], false));
+		assert(js.memorymatch(['↓'], false));
+	});
+
+	it("Should not match non-existent commands", function() {
+		assert.equal(js.memorymatch(['↑'], false), false);
+		assert.equal(js.memorymatch(['x'], false), false);
+	});
+
+	it("Should match long commands", function() {
+		assert(js.memorymatch(['→','↘','→'], false));
+		assert(js.memorymatch(['→','→','→ + □'], false));
+		assert(js.memorymatch(['↓','△'], false));
+		assert(js.memorymatch(['↓','△', 'L1 + ○'], false));
+	});
+
+	it("Should not match non-sequential chains", function() {
+		assert.equal(js.memorymatch(['↙', '→ + □'], false), false);
+		assert.equal(js.memorymatch(['△', '↘'], false), false);
+	});
 
     // Shutdown
 	after(function(done) {

@@ -30,7 +30,7 @@ node-red-reload
 That's it
 
 ## TODO
-- Finish up match `memorymatch` test cases 
+- Add Xbox one controller config  
 
 
 ## See also
