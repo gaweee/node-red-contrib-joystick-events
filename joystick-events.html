@@ -1,0 +1,141 @@
+<script type="text/javascript">
+    RED.nodes.registerType('joystick in', {
+        category: 'network',
+        color: '#c6dbef',
+        defaults: {
+      	    jsid:       { value: '0', required: true},
+            translate:  { value: '1' },
+            framerate:  { value: 20 },
+            memorysize: { value: 50 },
+            name:       { value: "" }
+        },
+        inputs: 1,
+        outputs: 1,
+        icon: "controller.png",
+        label: function() {
+            return this.name ||"joystick in";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="joystick in">
+    <div class="form-row">
+        <label for="node-config-input-jsid"><i class="fa fa-gamepad"></i> Device ID</label>
+        <input type="text" id="node-input-jsid" placeholder="0">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-translate"><i class="fa fa-random"></i> Translate</label>
+        <label for="node-input-translate" style="width:70%">
+            <input type="checkbox" id="node-input-translate" style="display:inline-block; width:22px; vertical-align:baseline;" autocomplete="off">from raw to ascii controller commands
+        </label>
+    </div>
+
+    <div class="form-row">
+        <label for="node-config-input-framerate"><i class="fa fa-history"></i> Framerate</label>
+        <input type="text" id="node-input-framerate" placeholder="20">
+    </div>
+
+    <div class="form-row">
+        <label for="node-config-input-memorysize"><i class="fa fa-history"></i> Memory Size</label>
+        <input type="text" id="node-input-memorysize" placeholder="50">
+    </div>
+
+    <!-- Add framerate and memorysize here -->
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="joystick in">
+    <p>A simple node that receives event calls from /dev/input/js(id)</p>
+    <span class="red-ui-text-bidi-aware" dir="">
+	    <p>Tracks Joystick events from the <code>/dev/inpiut/js(id)</code>, where <code>(id)</code> is numeric and typically takes on the value of 0, 1,2 (depending on the number of controllers attached)</p>
+        <p>The <code>framerate</code> and <code>memorysize</code> parameters refers to how quickly each frame (in frames per second) is translated (does not apply for raw) and how long to retain the commands in memory for <code>joystick match</code> node to match
+		<h3>Outputs</h3>
+        There are 2 types of outputs possible depending if the <code>translate</code> has been turned on:
+		<ol class="node-ports">
+         <li>translated output
+             <dl class="message-properties">
+                 <dt>Translated ascii text <span class="property-type">payload</span></dt>
+                 <dd>A ascii text payload the codifies the current command <code>(E.g. → + △ + □)</code> based on PlayStation Buttons</dd>
+             </dl>
+         </li>
+         <li>Raw output
+             <dl class="message-properties">
+                 <dt>raw object <span class="property-type">payload</span></dt>
+                 <dd>A single frame from the axis or button input stream codified into an object payload</dd>
+             </dl>
+         </li>
+     </ol>
+	</span>
+</script>
+
+
+
+
+
+<script type="text/javascript">
+    RED.nodes.registerType('joystick match', {
+        category: 'network',
+        color: '#c6dbef',
+        defaults: {
+            pattern:    { value: "→,↓,↘,→+○", required: true },
+            name:       { value:"" }
+        },
+        inputs: 1,
+        outputs: 2,
+        icon: "hadoken.png",
+        label: function() {
+            return this.name ||"joystick match";
+        }
+    });
+</script>
+
+
+<script type="text/x-red" data-template-name="joystick match">
+
+    <div class="form-row">
+        <label for="node-config-input-pattern"><i class="fa fa-font"></i> Pattern</label>
+        <input type="text" id="node-input-pattern" placeholder="CSV, e.g. →,↓,↘,→ + ○">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="joystick match">
+    <p>A simple node that receives event calls from /dev/input/js(id)</p>
+    <span class="red-ui-text-bidi-aware" dir="">
+        <p>Matches a sequence of Joystick events to a particular pattern <code>(E.g. Uppercut: →, ↓, ↘, → + ○)</code></p>
+        <p>This works primarily on the Dualshock Controller</p>
+        <h3>Outputs</h3>
+        <ol class="node-ports">
+         <li>Matched command
+             <dl class="message-properties">
+                 <dt>Matched text pattern <span class="property-type">payload</span></dt>
+                 <dd>The ascii matched pattern <code>(E.g. → + △ + □)</code></dd>
+             </dl>
+         </li>
+         <li>Forwarded Translated output
+             <dl class="message-properties">
+                 <dt>Forwarded unmatched DS4 translated ascii text <span class="property-type">payload</span></dt>
+                 <dd>A ascii text payload the codifies the current command <code>(E.g. → + △ + □)</code></dd>
+             </dl>
+         </li>
+         <h3>Pattern Possibilities</h3>
+        <p>Possible keys include:</p>
+        <code>
+            ↖ ↑ ↗ <br />
+            ← · → <br />
+            ↙ ↓ ↘ <br />
+            L1, L2, L3, R1, R2, R3, Share, Options, PS Button <br />
+            x ○ △ □<br />
+        </code>
+     </ol>
+    </span>
+</script>

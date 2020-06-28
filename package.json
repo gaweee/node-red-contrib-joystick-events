@@ -1,0 +1,26 @@
+{
+  "name": "red-contrib-joystick-input",
+  "version": "1.0.0",
+  "description": "Package to inject Joystick Events to Node-Red based off the package from node-joystick (https://github.com/JayBeavers/node-joystick/blob/master/joystick.js)",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "node-red": {
+    "nodes": {
+      "joystick-events": "joystick-events.js"
+    }
+  },
+  "keywords": [
+    "linux",
+    "events",
+    "joystick",
+    "usbhid",
+    "node-red"
+  ],
+  "author": "Gary Teo",
+  "license": "ISC",
+  "dependencies": {
+    "joystick": "^0.1.2",
+    "lodash": "^4.17.15"
+  }
+}
