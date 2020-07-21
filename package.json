@@ -21,7 +21,7 @@
   "license": "ISC",
   "dependencies": {
     "joystick": "^0.1.2",
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.19"
   },
   "devDependencies": {
     "mocha": "^8.0.1",
