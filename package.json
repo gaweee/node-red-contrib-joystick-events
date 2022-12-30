@@ -24,7 +24,7 @@
     "lodash": "^4.17.15"
   },
   "devDependencies": {
-    "mocha": "^8.0.1",
+    "mocha": "^8.4.0",
     "request": "^2.88.2",
     "why-is-node-running": "^2.2.0"
   }
